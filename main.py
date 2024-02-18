@@ -19,7 +19,7 @@ OPERATIONS = {
 }
 
 def is_digit(s: str) -> bool:
-    return s.replace("-", "", 1).replace(".", "", 1).isdigit():
+    return s.replace("-", "", 1).replace(".", "", 1).isdigit()
 
 def tokenize(s: str) -> list:
     #  using regular expressions to add spaces between operation characters

@@ -2,7 +2,7 @@ import math
 import re
 
 
-VALID_CHARACTERS = set(" 0123456789+-*/()^.sin cos tan cot sqrt ln")
+VALID_CHARACTERS = set(" 0123456789+-*/()^.sin cos tan cot sqrt ln pi e")
 
 OPERATIONS = {
     '+': (lambda a, b: a + b, 2, 1),
@@ -22,7 +22,10 @@ def is_digit(s: str) -> bool:
     return s.replace("-", "", 1).replace(".", "", 1).isdigit()
 
 def tokenize(s: str) -> list:
-    #  using regular expressions to add spaces between operation characters
+    # replace constants with values
+    s = s.replace("pi", str(math.pi)).replace("e", str(math.e))
+    
+    # using regular expressions to add spaces between operation characters
     s = re.sub(r'(\+|-^d|\*|/|\^|\(|\))', r' \1 ', s)
     s = re.sub(r'(sin|cos|tg|ctg|sqrt|ln)', r' \1 ', s)
     return s.split()

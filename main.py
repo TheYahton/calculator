@@ -18,11 +18,14 @@ OPERATIONS = {
     'ln': (lambda a: math.log(a), 1, 4),
 }
 
-def add_spaces(s: str) -> str:
+def is_digit(s: str) -> bool:
+    return s.replace("-", "", 1).replace(".", "", 1).isdigit():
+
+def tokenize(s: str) -> list:
     #  using regular expressions to add spaces between operation characters
     s = re.sub(r'(\+|-^d|\*|/|\^|\(|\))', r' \1 ', s)
     s = re.sub(r'(sin|cos|tg|ctg|sqrt|ln)', r' \1 ', s)
-    return s
+    return s.split()
 
 def evaluate_rpn(expression: list) -> float:
     stack = []
@@ -36,12 +39,12 @@ def evaluate_rpn(expression: list) -> float:
             stack.append(float(token))
     return stack.pop()
 
-def infix_to_rpn(expression):
+def infix_to_rpn(expression) -> list:
     output = []
     stack = []
     
     for token in expression:
-        if token.replace("-", "", 1).replace(".", "", 1).isdigit():
+        if is_digit(token):
             output.append(token)
         elif token in OPERATIONS:
             while stack and stack[-1] != '(' and OPERATIONS[token][2] <= OPERATIONS.get(stack[-1], [0, 0, 0])[2]:
@@ -59,19 +62,19 @@ def infix_to_rpn(expression):
     
     return output
 
-def main(string: str) -> int|float:
+def main(string: str) -> float:
     if string == "":
         return 0
     if not VALID_CHARACTERS.issuperset(string):
         raise SyntaxError("The entered string contains invalid characters!")
 
-    exp = add_spaces(string).split()
+    exp = tokenize(string)
     exp = infix_to_rpn(exp)
     result = evaluate_rpn(exp)
 
     return result
 
 if __name__ == '__main__':
-    print("simplecalc v1 python edition")
+    print("serpentinum calculatio")
     while True:
         print(main(input(">>> ")))

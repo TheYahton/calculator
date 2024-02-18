@@ -2,7 +2,7 @@ import math
 import re
 
 
-VALID_CHARACTERS = set(" 0123456789+-*/()^sinco.")
+VALID_CHARACTERS = set(" 0123456789+-*/()^.sin cos tan cot sqrt ln")
 
 OPERATIONS = {
     '+': (lambda a, b: a + b, 2, 1),
@@ -12,12 +12,16 @@ OPERATIONS = {
     '^': (lambda a, b: a ** b, 2, 3),
     'sin': (lambda a: math.sin(a), 1, 4),
     'cos': (lambda a: math.cos(a), 1, 4),
+    'tan': (lambda a: math.tan(a), 1, 4),
+    'cot': (lambda a: 1 / math.tan(a), 1, 4),
+    'sqrt': (lambda a: math.sqrt(a), 1, 4),
+    'ln': (lambda a: math.log(a), 1, 4),
 }
 
 def add_spaces(s: str) -> str:
     #  using regular expressions to add spaces between operation characters
     s = re.sub(r'(\+|-^d|\*|/|\^|\(|\))', r' \1 ', s)
-    s = re.sub(r'(sin|cos)', r' \1 ', s)
+    s = re.sub(r'(sin|cos|tg|ctg|sqrt|ln)', r' \1 ', s)
     return s
 
 def evaluate_rpn(expression: list) -> float:

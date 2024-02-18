@@ -2,7 +2,14 @@ import math
 import re
 
 
-VALID_CHARACTERS = set(" 0123456789+-*/()^.sin cos tan cot sqrt ln pi e")
+VALID_CHARACTERS = set(" 0123456789+-*/()^.sin cos tan cot sqrt ln pi e x b ABCDEFabcdef")
+
+NUMBER_SYSTEMS = {
+    '0b': (lambda s: int(s, base=2)),
+    '-0b': (lambda s: int(s, base=2)),
+    '0x': (lambda s: int(s, base=16)),
+    '-0x': (lambda s: int(s, base=16)),
+}
 
 OPERATIONS = {
     '+': (lambda a, b: a + b, 2, 1),
@@ -18,13 +25,19 @@ OPERATIONS = {
     'ln': (lambda a: math.log(a), 1, 4),
 }
 
-def is_digit(s: str) -> bool:
-    return s.replace("-", "", 1).replace(".", "", 1).isdigit()
+def digit(s: str) -> bool:
+    try:
+        if s.startswith("-"):
+            return NUMBER_SYSTEMS.get(s[0:3], lambda s: float(s))(s)
+        else:
+            return NUMBER_SYSTEMS.get(s[0:2], lambda s: float(s))(s)
+    except ValueError:
+        return False
 
 def tokenize(s: str) -> list:
     # replace constants with values
     s = s.replace("pi", str(math.pi)).replace("e", str(math.e))
-    
+
     # using regular expressions to add spaces between operation characters
     s = re.sub(r'(\+|-^d|\*|/|\^|\(|\))', r' \1 ', s)
     s = re.sub(r'(sin|cos|tg|ctg|sqrt|ln)', r' \1 ', s)
@@ -39,7 +52,7 @@ def evaluate_rpn(expression: list) -> float:
             #  applying the operation and appending the result back to the stack
             stack.append(OPERATIONS[token][0](*reversed(args)))
         else:
-            stack.append(float(token))
+            stack.append(digit(token))
     return stack.pop()
 
 def infix_to_rpn(expression) -> list:
@@ -47,7 +60,7 @@ def infix_to_rpn(expression) -> list:
     stack = []
     
     for token in expression:
-        if is_digit(token):
+        if digit(token):
             output.append(token)
         elif token in OPERATIONS:
             while stack and stack[-1] != '(' and OPERATIONS[token][2] <= OPERATIONS.get(stack[-1], [0, 0, 0])[2]:

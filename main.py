@@ -2,7 +2,7 @@ import math
 import re
 
 
-VALID_CHARACTERS = set(" 0123456789+-*/()^sinco")
+VALID_CHARACTERS = set(" 0123456789+-*/()^sinco.")
 
 OPERATIONS = {
     '+': (lambda a, b: a + b, 2, 1),
@@ -16,7 +16,7 @@ OPERATIONS = {
 
 def add_spaces(s: str) -> str:
     #  using regular expressions to add spaces between operation characters
-    s = re.sub(r'(\+|-|\*|/|\^|\(|\))', r' \1 ', s)
+    s = re.sub(r'(\+|-^d|\*|/|\^|\(|\))', r' \1 ', s)
     s = re.sub(r'(sin|cos)', r' \1 ', s)
     return s
 
@@ -37,7 +37,7 @@ def infix_to_rpn(expression):
     stack = []
     
     for token in expression:
-        if token.isdigit():
+        if token.replace("-", "", 1).replace(".", "", 1).isdigit():
             output.append(token)
         elif token in OPERATIONS:
             while stack and stack[-1] != '(' and OPERATIONS[token][2] <= OPERATIONS.get(stack[-1], [0, 0, 0])[2]:

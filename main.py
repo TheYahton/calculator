@@ -6,9 +6,8 @@ VALID_CHARACTERS = set(" 0123456789+-*/()^.sin cos tan cot sqrt ln pi e x b ABCD
 
 NUMBER_SYSTEMS = {
     '0b': (lambda s: int(s, base=2)),
-    '-0b': (lambda s: int(s, base=2)),
+    '0o': (lambda s: int(s, base=8)),
     '0x': (lambda s: int(s, base=16)),
-    '-0x': (lambda s: int(s, base=16)),
 }
 
 OPERATIONS = {
@@ -25,23 +24,29 @@ OPERATIONS = {
     'ln': (lambda a: math.log(a), 1, 4),
 }
 
-def digit(s: str) -> bool:
+def digit(s: str) -> int|float|str:
     try:
-        if s.startswith("-"):
-            return NUMBER_SYSTEMS.get(s[0:3], lambda s: float(s))(s)
-        else:
-            return NUMBER_SYSTEMS.get(s[0:2], lambda s: float(s))(s)
+        return NUMBER_SYSTEMS.get(s[0:2], lambda s: float(s))(s)
     except ValueError:
-        return False
+        return s
 
 def tokenize(s: str) -> list:
     # replace constants with values
     s = s.replace("pi", str(math.pi)).replace("e", str(math.e))
 
     # using regular expressions to add spaces between operation characters
-    s = re.sub(r'(\+|-^d|\*|/|\^|\(|\))', r' \1 ', s)
+    s = re.sub(r'(\+|-|\*|/|\^|\(|\))', r' \1 ', s)
     s = re.sub(r'(sin|cos|tg|ctg|sqrt|ln)', r' \1 ', s)
-    return s.split()
+
+    expression = s.split()
+    expression = list(map(digit, expression))
+
+    for i, val in enumerate(expression):
+        if val == '-' and (not isinstance(expression[i-1], (int, float)) or i == 0):
+            expression[i+1] = -expression[i+1]
+            expression.pop(i)
+
+    return expression
 
 def evaluate_rpn(expression: list) -> float:
     stack = []
@@ -52,7 +57,7 @@ def evaluate_rpn(expression: list) -> float:
             #  applying the operation and appending the result back to the stack
             stack.append(OPERATIONS[token][0](*reversed(args)))
         else:
-            stack.append(digit(token))
+            stack.append(token)
     return stack.pop()
 
 def infix_to_rpn(expression) -> list:
@@ -60,7 +65,7 @@ def infix_to_rpn(expression) -> list:
     stack = []
     
     for token in expression:
-        if digit(token):
+        if isinstance(token, (int, float)):
             output.append(token)
         elif token in OPERATIONS:
             while stack and stack[-1] != '(' and OPERATIONS[token][2] <= OPERATIONS.get(stack[-1], [0, 0, 0])[2]:
@@ -78,7 +83,7 @@ def infix_to_rpn(expression) -> list:
     
     return output
 
-def main(string: str) -> float:
+def calculate(string: str) -> float:
     if string == "":
         return 0
     if not VALID_CHARACTERS.issuperset(string):
@@ -93,4 +98,4 @@ def main(string: str) -> float:
 if __name__ == '__main__':
     print("serpentinum calculatio")
     while True:
-        print(main(input(">>> ")))
+        print(calculate(input(">>> ")))

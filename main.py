@@ -2,19 +2,22 @@ import math
 import re
 
 
-VALID_CHARACTERS = set(" 0123456789+-*/()^.sin cos tan cot sqrt ln pi e x b ABCDEFabcdef")
+VALID_CHARACTERS = set(" 0123456789+-*/()^.>==< sin cos tan cot sqrt ln pi e 0x 0b 0o ABCDEFabcdef")
 
 NUMBER_SYSTEMS = {
-    '0b': (lambda s: int(s, base=2)),
-    '0o': (lambda s: int(s, base=8)),
-    '0x': (lambda s: int(s, base=16)),
+    '0b': 2,
+    '0o': 8,
+    '0x': 16,
 }
 
 OPERATIONS = {
+    '==': (lambda a, b: a == b, 2, 0),
     '+': (lambda a, b: a + b, 2, 1),
     '-': (lambda a, b: a - b, 2, 1),
     '*': (lambda a, b: a * b, 2, 2),
     '/': (lambda a, b: a / b, 2, 2),
+    '<<': (lambda a, b: a << b, 2, 2),
+    '>>': (lambda a, b: a >> b, 2, 2),
     '^': (lambda a, b: a ** b, 2, 3),
     'sin': (lambda a: math.sin(a), 1, 4),
     'cos': (lambda a: math.cos(a), 1, 4),
@@ -24,22 +27,25 @@ OPERATIONS = {
     'ln': (lambda a: math.log(a), 1, 4),
 }
 
-def digit(s: str) -> int|float|str:
+def str2digit(s: str) -> int|float|str:
     try:
-        return NUMBER_SYSTEMS.get(s[0:2], lambda s: float(s))(s)
+        return int(s, NUMBER_SYSTEMS.get(s[0:2], 10))
     except ValueError:
-        return s
+        try:
+            return float(s)
+        except ValueError:
+            return s
 
 def tokenize(s: str) -> list:
     # replace constants with values
     s = s.replace("pi", str(math.pi)).replace("e", str(math.e))
 
     # using regular expressions to add spaces between operation characters
-    s = re.sub(r'(\+|-|\*|/|\^|\(|\))', r' \1 ', s)
+    s = re.sub(r'(\+|-|\*|/|\^|\(|\)|>>|<<|==)', r' \1 ', s)
     s = re.sub(r'(sin|cos|tg|ctg|sqrt|ln)', r' \1 ', s)
 
     expression = s.split()
-    expression = list(map(digit, expression))
+    expression = list(map(str2digit, expression))
 
     for i, val in enumerate(expression):
         if val == '-' and (not isinstance(expression[i-1], (int, float)) or i == 0):

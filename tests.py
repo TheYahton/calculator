@@ -17,7 +17,7 @@ CALCULATE_TEST = (
     {"arg": "2*-1", "res": -2},
 )
 
-class SquareEqSolverTestCase(unittest.TestCase):
+class TestCase(unittest.TestCase):
     def test_tokenize(self):
         for pair in TOKENIZE_TEST:
             self.assertEqual(tokenize(pair["arg"]), pair["res"])

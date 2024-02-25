@@ -1,5 +1,6 @@
 import unittest
 from main import calculate, tokenize, evaluate_rpn, infix_to_rpn
+from math import inf
 
 TOKENIZE_TEST = (
     {"arg": "1+1", "res": [1, "+", 1]},
@@ -15,6 +16,7 @@ CALCULATE_TEST = (
     {"arg": "-1+1", "res": 0},
     {"arg": "-1-1", "res": -2},
     {"arg": "2*-1", "res": -2},
+    {"arg": "1/0", "res": inf}
 )
 
 class TestCase(unittest.TestCase):

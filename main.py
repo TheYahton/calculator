@@ -24,6 +24,7 @@ OPERATIONS = {
     '%': (lambda a, b: a % b, 2, 2),
     '<<': (lambda a, b: a << b, 2, 2),
     '>>': (lambda a, b: a >> b, 2, 2),
+    '^': (lambda a, b: a ^ b, 2, 3),
     '**': (pow, 2, 3),
     'sin': (math.sin, 1, 4),
     'cos': (math.cos, 1, 4),

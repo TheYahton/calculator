@@ -31,7 +31,6 @@ OPERATIONS = {
     'cot': (lambda a: 1 / math.tan(a), 1, 4),
     'sqrt': (math.sqrt, 1, 4),
     'ln': (math.log, 1, 4),
-    'E': (lambda a, b: a * 10 ** b, 2, 4),
 }
 
 
@@ -49,11 +48,8 @@ def str2digit(s: str) -> int | float | str:
 
 
 def tokenize(s: str) -> list:
-    # replace constants with values
-    s = s.replace("pi", str(math.pi)).replace("e", str(math.e))
-
     # using regular expressions to add spaces between operation characters
-    s = re.sub(r'(//|>=|<=|\*\*|>>|<<|==|E|\+|-|\*|/|\^|\(|\)|>|<|%)', r' \1 ', s)
+    s = re.sub(r'(//|>=|<=|\*\*|>>|<<|==|\+|-|\*|/|\^|\(|\)|>|<|%)', r' \1 ', s)
     s = re.sub(r'(sin|cos|tg|ctg|sqrt|ln)', r' \1 ', s)
 
     expression = s.split()

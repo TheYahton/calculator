@@ -2,7 +2,7 @@ import math
 import re
 
 
-VALID_CHARACTERS = set(" 0123456789+-*/()^.>==<%E sin cos tan cot sqrt ln pi e 0x 0b 0o ABCDEF abcdef")
+VALID_CHARACTERS = set(" 0123456789+-*/()^.>==<%E sin cos tan cot sqrt ln pi e 0x 0b 0o ABCDEF abcdef j")
 
 NUMBER_SYSTEMS = {
     '0b': 2,
@@ -42,7 +42,10 @@ def str2digit(s: str) -> int | float | str:
         try:
             return float(s)
         except ValueError:
-            return s
+            try:
+                return complex(s)
+            except ValueError:
+                return s
 
 
 def tokenize(s: str) -> list:
@@ -82,7 +85,7 @@ def infix_to_rpn(expression) -> list:
     stack = []
 
     for token in expression:
-        if isinstance(token, (int, float)):
+        if isinstance(token, (int, float, complex)):
             output.append(token)
         elif token in OPERATIONS:
             while stack and stack[-1] != '(' and OPERATIONS[token][2] <= OPERATIONS.get(stack[-1], [0, 0, 0])[2]:

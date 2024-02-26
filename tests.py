@@ -16,7 +16,8 @@ CALCULATE_TEST = (
     {"arg": "-1+1", "res": 0},
     {"arg": "-1-1", "res": -2},
     {"arg": "2*-1", "res": -2},
-    {"arg": "1/0", "res": inf}
+    {"arg": "1/0", "res": inf},
+    {"arg": "10j", "res": 10j},
 )
 
 class TestCase(unittest.TestCase):

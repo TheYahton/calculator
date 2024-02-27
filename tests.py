@@ -19,7 +19,7 @@ CALCULATE_TEST = (
     {"arg": "1/0", "res": inf},
     {"arg": "10j", "res": 10j},
     {"arg": "10e5", "res": 10e5},
-    {"arg": "sin(3.14)": sin(3.14)},
+    {"arg": "sin(3.14)", "res": sin(3.14)},
 )
 
 class TestCase(unittest.TestCase):

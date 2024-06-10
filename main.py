@@ -58,11 +58,17 @@ def sanitaze(string: str) -> str:
 
 
 def tokenize(string: str) -> list[str | int | float | complex]:
-    pattern = "(" + sanitaze("|".join(OPERATIONS) + "|)|(") + ")"
-    # using regular expressions to add spaces between operation characters
-    string = re.sub(pattern, r" \1 ", string)
+    """
+    Лексер (токенайзер), разбивает строку на лексемы (токены).
+    """
 
+    pattern = "(" + sanitaze("|".join(OPERATIONS) + "|)|(") + ")"
+
+    # Используем регулярные выражения, чтобы поставить пробелы вокруг операций. Очень удобно после этого сплитнуть строку и получить список недотокенов. (недотокены нуждаются в дополнительном преобразовании в токены)
+    string = re.sub(pattern, r" \1 ", string)
     expression = string.split()
+
+
     expression = list(map(str2digit, expression))
 
     for i, val in enumerate(expression):
@@ -77,7 +83,11 @@ def tokenize(string: str) -> list[str | int | float | complex]:
     return expression
 
 
-def infix2rpn(expression) -> list[str | int | float | complex]:
+def parse(expression) -> list[str | int | float | complex]:
+    """
+    Алгоритм сортировочной станции (shunting yard algorithm). Переводит инфиксное выражение в постфиксное (RPN, обратная польская запись).
+    """
+
     output = []
     stack = []
 
@@ -105,7 +115,11 @@ def infix2rpn(expression) -> list[str | int | float | complex]:
     return output
 
 
-def evaluate_rpn(expression: list) -> int | float:
+def interprete(expression: list) -> int | float:
+    """
+    Типичная стековая машина.
+    """
+
     stack = []
     for token in expression:
         if token in OPERATIONS:
@@ -125,8 +139,8 @@ def calculate(string: str) -> float:
         raise SyntaxError("The entered string contains invalid characters!")
 
     expression = tokenize(string)
-    expression = infix2rpn(expression)
-    result = evaluate_rpn(expression)
+    expression = parse(expression)
+    result = interprete(expression)
 
     return result
 

@@ -5,7 +5,6 @@ def interprete(expression: list) -> int | float:
 
     stack = []
     for token in expression:
-        print(f"stack=")
         if isinstance(token, tuple):
             #  popping the required number of arguments onto the stack
             args = [stack.pop() for _ in range(token[1])]

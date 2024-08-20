@@ -10,12 +10,9 @@ def calculate(string: str) -> float:
     if not VALID_CHARACTERS.issuperset(string):
         raise SyntaxError("The entered string contains invalid characters!")
     
-    print(string)
     expression = tokenize(string)
-    print(expression)
-    expression = parse(expression)
-    print(expression)
-    result = interprete(expression)
+    ast = parse(expression)
+    result = interprete(ast)
 
     return result
 
